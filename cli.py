@@ -48,6 +48,6 @@ else:
 		else:
 			print('Invalid option (use -h for help)')
 	elif opt == '-h' or opt == '--help':
-		print('Usage: python conversion.py [OPTION] [VALUE]\n\nAvailable options:\n  -a, --analog; Converts analog data to voltage reading\n  -v, --voltage; Converts voltage reading to analog data\n  -h, --help; Displays this menu')
+		print('Usage: python cli.py [OPTION] [VALUE]\n\nAvailable options:\n  -a, --analog; Converts analog data to voltage reading\n  -v, --voltage; Converts voltage reading to analog data\n  -h, --help; Displays this menu')
 	else:
 		print('Invalid usage (use -h for help)')
