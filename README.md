@@ -1,1 +1,1 @@
-This is a school project for Stinky Colin, Smelly Jason, and Chad Patrick.
+This is a Group Project by Colin Tipton, Patrick Pearson, and Jason Bissias
