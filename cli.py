@@ -5,34 +5,37 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 #math to generate numbers used for calculation
-#import the PressureSensorData
-if sys.platform == 'darwin': #for Patrick's Mac because Tim Cook runs a terrible company
-    sensorData = pd.read_csv('PressureSensorData.csv')
-else:
-    sensorData = pd.read_csv('../PressureSensorData.csv')
+def theMath():
+    #import the PressureSensorData
+    if sys.platform == 'darwin': #for Patrick's Mac because Tim Cook runs a terrible company
+        sensorData = pd.read_csv('PressureSensorData.csv')
+    else:
+        sensorData = pd.read_csv('../PressureSensorData.csv')
 
-#reformat the data
-sensorData.columns = ['testID', 'truePressure', 'analogPressure', 'voltage'] #renaming columns for easier understanding
-sensorData.set_index('testID') #indexing the table by the test ID
+    #reformat the data
+    sensorData.columns = ['testID', 'truePressure', 'analogPressure', 'voltage'] #renaming columns for easier understanding
+    sensorData.set_index('testID') #indexing the table by the test ID
 
-#Build a model
-apvr = np.corrcoef(sensorData['analogPressure'], sensorData['voltage'])[0,1] #Analogue Pressure Voltage Correlation Coefficient
-apvSlopeOU = (apvr*np.std(sensorData['voltage']))/(np.std(sensorData['analogPressure']))
-apvInterOU = np.mean(sensorData['voltage']) - (apvSlopeOU*np.mean(sensorData['analogPressure']))
+    #Build a model
+    apvr = np.corrcoef(sensorData['analogPressure'], sensorData['voltage'])[0,1] #Analogue Pressure Voltage Correlation Coefficient
+    apvSlopeOU = (apvr*np.std(sensorData['voltage']))/(np.std(sensorData['analogPressure']))
+    apvInterOU = np.mean(sensorData['voltage']) - (apvSlopeOU*np.mean(sensorData['analogPressure']))
 
 
-#calculating standard deviations
-truePressureValues = sensorData['truePressure'].unique()
-voltagestdArr = []
-analogstdArr = []
+    #calculating standard deviations
+    truePressureValues = sensorData['truePressure'].unique()
+    voltagestdArr = []
+    analogstdArr = []
 
-for i in truePressureValues:
-    truePressureData = sensorData[sensorData['truePressure']==i]
-    voltagestdArr.append(np.std(truePressureData['voltage']))
-    analogstdArr.append(np.std(truePressureData['analogPressure']))
+    for i in truePressureValues:
+        truePressureData = sensorData[sensorData['truePressure']==i]
+        voltagestdArr.append(np.std(truePressureData['voltage']))
+        analogstdArr.append(np.std(truePressureData['analogPressure']))
+
+    voltagestd = np.mean(voltagestdArr)
+    analogstd = np.mean(analogstdArr)
     
-voltagestd = np.mean(voltagestdArr)
-analogstd = np.mean(analogstdArr)
+    return apvr, apvSlopeOU, apvInterOU, voltagestd, analogstd
 
 #Actual CLI arguments
 if len(sys.argv[1:]) == 0:
@@ -40,6 +43,7 @@ if len(sys.argv[1:]) == 0:
 else:
 	opt=sys.argv[1:][0]
 	if len(sys.argv[1:]) == 2:
+		apvr, apvSlopeOU, apvInterOU, voltagestd, analogstd = theMath()
 		num = float(sys.argv[1:][1])
 		if opt == '-a' or opt == '--analog':
 			print('We are 95% confident that the voltage is within ' + str(apvSlopeOU*num+apvInterOU-2*voltagestd) + ' and ' + str(apvSlopeOU*num+apvInterOU+2*voltagestd) + '.')
